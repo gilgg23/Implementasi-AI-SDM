@@ -1,0 +1,287 @@
+{
+  "name": "Tugas 4 AI SDM",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "c8a9414c-6776-417a-86a5-71d06625ca41",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1,
+      "position": [
+        -528,
+        16
+      ],
+      "webhookId": "sop-ai-agent",
+      "credentials": {
+        "telegramApi": {
+          "id": "UahRyZFBsiy5bt2B",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "reimbursement",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              },
+              "id": "9f85f9d8-8c61-46ec-866a-c321d51f700b"
+            },
+            {
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "cuti",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              },
+              "id": "4ff122d8-3d13-4e8b-833b-31218f31e171"
+            },
+            {
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "lembur",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              },
+              "id": "3e9c18c8-dc4a-4fca-9f00-65944a9f12e1"
+            },
+            {
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "asuransi",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              },
+              "id": "c6e161b5-5131-40a5-b743-79c8f5ba4ae8"
+            },
+            {
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "alat kerja",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              },
+              "id": "4e74832b-9091-449c-94de-807db9cd84f3"
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "9a3a7dfa-ad22-471f-abe2-1f4a5908b5e0",
+      "name": "Filter Keyword SOP",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -272,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "❌ Maaf, format pertanyaan tidak dikenali.\n\nSilakan gunakan kata kunci berikut:\n- reimbursement\n- cuti\n- lembur\n- asuransi\n- alat kerja\n\nContoh:\nBagaimana prosedur cuti?",
+        "additionalFields": {}
+      },
+      "id": "ab99d72c-3290-488f-9a01-79e7b41599d0",
+      "name": "False Output",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        160
+      ],
+      "webhookId": "68f38cfd-93e0-465d-b52f-080732ebfcac",
+      "credentials": {
+        "telegramApi": {
+          "id": "UahRyZFBsiy5bt2B",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "Kamu adalah Asisten HR Virtual.\n\nATURAN KERAS:\n1. Kamu WAJIB menggunakan tool Google Sheets.\n2. Jangan menjawab tanpa mengambil data dari tool.\n3. Data memiliki kolom: Pertanyaan dan Jawaban.\n4. Cocokkan pertanyaan user dengan kolom Pertanyaan.\n5. Ambil Jawaban yang paling relevan.\n6. Jika tidak ditemukan, jawab:\nMaaf, informasi mengenai hal tersebut belum tersedia di database SOP kami. Silakan hubungi tim HR secara langsung.\n7. Gunakan bahasa Indonesia yang sopan.\n8. Jangan gunakan markdown.\n9. Akhiri dengan: Ada yang ingin ditanyakan lagi?"
+        }
+      },
+      "id": "5c03ac32-800d-4d5e-9805-90a420ec8732",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1r6lkfEWNAjDbyZp-mh6mAiUNP--P3gFe6pIZgKeIhCY",
+          "mode": "list",
+          "cachedResultName": "Data Pertanyaan Karyawan",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1r6lkfEWNAjDbyZp-mh6mAiUNP--P3gFe6pIZgKeIhCY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1r6lkfEWNAjDbyZp-mh6mAiUNP--P3gFe6pIZgKeIhCY/edit#gid=0"
+        },
+        "options": {}
+      },
+      "id": "fff6e94b-530e-4b93-850a-30c6c040b317",
+      "name": "Google Sheets Data",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4,
+      "position": [
+        208,
+        240
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "E5pLPHUJOnQsTWMU",
+          "name": "Google Sheets account 7"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "1766066504",
+        "text": "={{ $json.output || 'Maaf, terjadi kesalahan dalam memproses jawaban.' }}",
+        "additionalFields": {}
+      },
+      "id": "976ac01b-064f-4ac2-8118-d7c8b0066ccb",
+      "name": "True Output",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        352,
+        0
+      ],
+      "webhookId": "a0cc9b26-c147-45b4-8477-9c865251f228",
+      "credentials": {
+        "telegramApi": {
+          "id": "UahRyZFBsiy5bt2B",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        32,
+        272
+      ],
+      "id": "22ce81b2-ea03-4819-88b9-5449dc468ad0",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ok7plSrqd7SF7ZvN",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Filter Keyword SOP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Keyword SOP": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "False Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "True Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Data": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "eba2030c-283e-4132-ada5-77203eb0aad6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "cdda6c5a178fd429ae4e8a2b8a0fde1535e9d34e75c3c9330c0155f848e4432c"
+  },
+  "id": "ahjxEcLhIJDsxqzr",
+  "tags": []
+}
